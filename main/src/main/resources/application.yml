@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    group:
+      default:
+        - "news"
+        - "weather"
+        - "user"
+      local:
+        - "default"
+        - "news-local"
+        - "weather-local"
+        - "user-local"

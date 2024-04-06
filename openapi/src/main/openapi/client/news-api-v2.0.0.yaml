@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: News Api
+  version: 2.0.0
+servers:
+  - url: https://newsapi.org/v2
+
+paths:
+  /top-headlines:
+    get:
+      tags:
+        - top-headlines
+      operationId: getTopHeadlines
+      summary: get the top headlines based on country
+      parameters:
+        - name: country
+          in: query
+          description: Country code
+          schema:
+            type: string
+        - name: apiKey
+          in: query
+          description: Api key to use
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with news articles
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/NewsResponse'
+components:
+  schemas:
+    NewsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        totalResults:
+          type: integer
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsArticle'
+    NewsArticle:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/NewsSource'
+        author:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        urlToImage:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+        content:
+          type: string
+    NewsSource:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
