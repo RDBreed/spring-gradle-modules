@@ -2,15 +2,22 @@ package eu.phaf.gradle.plugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskContainer
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import java.io.File
 import java.util.*
 
+val Project.`sourceSets`: SourceSetContainer get() = extensions.getByName("sourceSets") as SourceSetContainer
 
 class RegisterOpenApiTasksPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        setupOpenApiTasks(project.projectDir.path, project.layout.buildDirectory.get().toString(), project.tasks)
+        setupOpenApiTasks(
+                project.projectDir.path,
+                project.layout.buildDirectory.get().toString(),
+                project.tasks,
+                project.sourceSets.getByName("main").java)
     }
 }
 
@@ -18,25 +25,25 @@ enum class OpenApiType {
     CLIENT, SERVER
 }
 
-fun setupOpenApiTasks(projectDir: String, buildDirectory: String, tasks: TaskContainer) {
+fun setupOpenApiTasks(projectDir: String, buildDirectory: String, tasks: TaskContainer, sourceDirectorySet: SourceDirectorySet) {
     val sourceDir = "$projectDir/src/main/openapi/"
     val generatedDir = "$buildDirectory/generated"
-    val generatedSourceDir = "$generatedDir/src/main/java"
     val openApiList = getOpenApiList(sourceDir)
     val openApiTasks: MutableList<GenerateTask> = mutableListOf()
-    openApiList.forEach { it ->
+    openApiList.forEach {
         val apiName = getApiName(it.key)
         if (it.value == OpenApiType.CLIENT) {
-            openApiTasks.add(createClientOpenApiTask(apiName, it.key, projectDir, generatedSourceDir, sourceDir, clientConfigOptions(), tasks))
+            openApiTasks.add(createClientOpenApiTask(apiName, it.key, projectDir, generatedDir, sourceDir, clientConfigOptions(), tasks))
         } else if (it.value == OpenApiType.SERVER) {
-            openApiTasks.add(createServerOpenApiTask(apiName, it.key, projectDir, generatedSourceDir, sourceDir, serverConfigOptions(), tasks))
-        }
-        tasks.create("openApiGenerateAll") {
-            it.inputs.dir(sourceDir)
-            it.outputs.dir(generatedSourceDir)
-            it.dependsOn(openApiTasks)
+            openApiTasks.add(createServerOpenApiTask(apiName, it.key, projectDir, generatedDir, sourceDir, serverConfigOptions(), tasks))
         }
     }
+    tasks.create("openApiGenerateAll") {
+        it.inputs.dir(sourceDir)
+        it.outputs.dir(generatedDir)
+        it.dependsOn(openApiTasks)
+    }
+    sourceDirectorySet.srcDir("$generatedDir/src/main/java")
 }
 
 fun createClientOpenApiTask(
@@ -48,7 +55,7 @@ fun createClientOpenApiTask(
         configOptionsMap: Map<String, String>,
         tasks: TaskContainer
 ): GenerateTask {
-    return tasks.create(getTaskName(apiName),
+    return tasks.create(getTaskName(apiName, "Client"),
             GenerateTask::class.java) {
         it.inputs.file(file.path)
         it.outputs.dir(generatedSourceDir)
@@ -77,7 +84,7 @@ fun createServerOpenApiTask(
         configOptionsMap: Map<String, String>,
         tasks: TaskContainer
 ): GenerateTask {
-    return tasks.create(getTaskName(apiName),
+    return tasks.create(getTaskName(apiName, "Server"),
             GenerateTask::class.java) {
         it.inputs.file(file.path)
         it.outputs.dir(generatedSourceDir)
@@ -146,5 +153,5 @@ fun getApiName(it: File) = it.name
         .replace("-", "")
         .replace(".", "_")
 
-fun getTaskName(apiName: String) = "openApiGenerate" +
+fun getTaskName(apiName: String, type: String) = "openApiGenerate" + type +
         apiName.replaceFirstChar { it.titlecase(Locale.getDefault()) }

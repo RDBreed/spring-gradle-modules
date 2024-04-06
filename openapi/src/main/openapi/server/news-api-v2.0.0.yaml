@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: News Api
+  version: 2.0.0
+servers:
+  - url: https://newsapi.org/v2
+
+paths:
+  /news:
+    get:
+      tags:
+        - news
+      operationId: getNewsByCountry
+      summary: get the news based on country
+      parameters:
+        - name: country
+          in: query
+          description: Country code
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with news articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsArticleResponse'
+components:
+  schemas:
+    NewsArticleResponse:
+      type: object
+      properties:
+        sourceName:
+          type: string
+        author:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        image:
+          type: string
+          format: binary
+        publishedAt:
+          type: string
+          format: date-time
