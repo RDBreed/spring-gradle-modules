@@ -1,0 +1,6 @@
+news:
+  news-org:
+    api:
+      v2:
+        basePath: https://newsapi.org/v2/
+        apiKey: ${NEWSAPI_ORG_API_KEY}

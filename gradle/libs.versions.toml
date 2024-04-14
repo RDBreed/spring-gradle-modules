@@ -3,18 +3,23 @@ jakartaAnnotations = "2.1.1"
 jackson = "2.13.4"
 jacksonDatabind = "2.13.4.2"
 swaggerAnnotations = "2.2.21"
+# TODO check https://github.com/spring-cloud/spring-cloud-contract/issues/1933 on compatibility to 3.0.1
+wiremock = "2.35.0"
+wiremockSpringCloud = "4.0.4"
 
 [libraries]
-openapiPlugin = {group = "org.openapitools", name = "openapi-generator-gradle-plugin", version = "7.0.0"}
-jakartaAnnotations = {module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakartaAnnotations"}
-jacksonDatatypeJsr = {module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson"}
-jacksonDatabind = {module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind"}
-jacksonAnnotations = {module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson"}
-swaggerAnnotations = {module = "io.swagger.core.v3:swagger-core-jakarta", version.ref = "swaggerAnnotations"}
-springBootStarterValidation = {module = "org.springframework.boot:spring-boot-starter-validation"}
+openapiPlugin = { group = "org.openapitools", name = "openapi-generator-gradle-plugin", version = "7.0.0" }
+jakartaAnnotations = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakartaAnnotations" }
+jacksonDatatypeJsr = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
+jacksonAnnotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+swaggerAnnotations = { module = "io.swagger.core.v3:swagger-core-jakarta", version.ref = "swaggerAnnotations" }
+springBootStarterValidation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+wiremock = { module = "com.github.tomakehurst:wiremock-jre8-standalone", version.ref = "wiremock" }
+wiremockSpringCloud = { module = "org.springframework.cloud:spring-cloud-contract-wiremock", version.ref = "wiremockSpringCloud" }
 [bundles]
 openapi = ["jakartaAnnotations", "jacksonDatatypeJsr", "jacksonDatabind", "jacksonAnnotations", "swaggerAnnotations", "springBootStarterValidation"]
-
+wiremockSpring = ["wiremock", "wiremockSpringCloud"]
 [plugins]
 openapi = { id = "org.openapi.generator", version = "7.0.0" }
 springboot = { id = 'org.springframework.boot', version = '3.2.4' }

@@ -44,7 +44,7 @@ components:
           type: string
         image:
           type: string
-          format: binary
+          format: byte
         publishedAt:
           type: string
           format: date-time

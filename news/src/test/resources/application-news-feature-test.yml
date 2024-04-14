@@ -1,0 +1,6 @@
+news:
+  news-org:
+    api:
+      v2:
+        basePath: http://localhost:${wiremock.server.port}
+        apiKey: news_api_key
