@@ -1,11 +1,8 @@
-package eu.phaf.news.domain;
-
-import org.springframework.stereotype.Service;
+package eu.phaf.news.application.service;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
 
-@Service
 public class CountryValidator {
     public boolean isValid(String country) {
         try {

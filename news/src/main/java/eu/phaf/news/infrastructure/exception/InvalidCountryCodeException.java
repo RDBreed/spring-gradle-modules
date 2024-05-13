@@ -1,4 +1,4 @@
-package eu.phaf.news.domain;
+package eu.phaf.news.infrastructure.exception;
 
 public class InvalidCountryCodeException extends RuntimeException {
     private final String countryCode;

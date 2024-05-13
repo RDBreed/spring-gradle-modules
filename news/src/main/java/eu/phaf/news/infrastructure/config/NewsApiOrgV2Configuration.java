@@ -1,4 +1,4 @@
-package eu.phaf.news.adapters.client;
+package eu.phaf.news.infrastructure.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

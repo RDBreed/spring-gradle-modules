@@ -2,7 +2,7 @@ package eu.phaf.openapiconfiguration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.phaf.openapi.config.ApiClient;
+import eu.phaf.openapi.infrastructure.config.ApiClient;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
 import org.springframework.http.HttpStatus;
@@ -15,8 +15,8 @@ import reactor.netty.http.client.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class OpenApiClientConfiguration {
-    protected ApiClient apiClient(OpenApiProperties openApiProperties) {
+public final class OpenApiClientConfiguration {
+    public static ApiClient apiClient(OpenApiProperties openApiProperties) {
         var defaultDateFormat = ApiClient.createDefaultDateFormat();
         var defaultObjectMapper = ApiClient.createDefaultObjectMapper(defaultDateFormat);
         defaultObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -30,7 +30,7 @@ public abstract class OpenApiClientConfiguration {
         return apiClient;
     }
 
-    private WebClient.Builder getWebClientBuilder(ObjectMapper defaultObjectMapper, OpenApiProperties openApiProperties) {
+    private static WebClient.Builder getWebClientBuilder(ObjectMapper defaultObjectMapper, OpenApiProperties openApiProperties) {
         HttpClient httpClient = HttpClient.create();
         if (openApiProperties.connectionTimeout() != null) {
             httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, openApiProperties.connectionTimeout());

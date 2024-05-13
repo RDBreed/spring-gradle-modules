@@ -1,8 +1,8 @@
-package eu.phaf.news.adapters.server;
+package eu.phaf.news.interfaces.controller;
 
-import eu.phaf.news.domain.NewsService;
-import eu.phaf.openapi.newsapiv2_0_0.model.NewsArticleResponse;
-import eu.phaf.openapi.newsapiv2_0_0.server.api.NewsApi;
+import eu.phaf.news.application.service.NewsService;
+import eu.phaf.openapi.newsapiv2_0_0.domain.dto.NewsArticleResponse;
+import eu.phaf.openapi.newsapiv2_0_0.infrastructure.api.server.NewsApi;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;

@@ -1,16 +1,16 @@
-package eu.phaf.news.domain;
+package eu.phaf.news.application.service;
 
-import eu.phaf.news.port.client.NewsApi;
-import org.springframework.stereotype.Service;
+import eu.phaf.news.application.gateway.NewsGateway;
+import eu.phaf.news.domain.model.NewsArticle;
+import eu.phaf.news.infrastructure.exception.InvalidCountryCodeException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
 public class NewsService {
-    private final NewsApi newsApi;
+    private final NewsGateway newsApi;
     private final CountryValidator countryValidator;
 
-    public NewsService(NewsApi newsApi, CountryValidator countryValidator) {
+    public NewsService(NewsGateway newsApi, CountryValidator countryValidator) {
         this.newsApi = newsApi;
         this.countryValidator = countryValidator;
     }
