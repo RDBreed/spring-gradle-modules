@@ -40,9 +40,9 @@ public class NewsController implements NewsApi {
     }
 
     private ResponseStatusException getErrorResponse(Error<Exception> exceptionError) {
-        return switch (exceptionError.getCode()) {
+        return switch (exceptionError.code()) {
             case InvalidCountryCodeException ignored ->
-                    new ResponseStatusException(HttpStatus.BAD_REQUEST, exceptionError.getMessage());
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, exceptionError.message());
             case UnauthorizedException ignored -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unauthorized.");
             case UnrecoverableClientException ignored -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
             default -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");

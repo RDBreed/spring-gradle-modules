@@ -2,15 +2,7 @@ package eu.phaf.monadic;
 
 import java.util.function.Function;
 
-public class Result<T, U> {
-    private final T value;
-    private final Error<U> error;
-
-    Result(T value, Error<U> error) {
-        this.value = value;
-        this.error = error;
-    }
-
+public record Result<T, U>(T value, Error<U> error) {
     public static <T, U> Result<T, U> of(T value) {
         return new Result<>(value, null);
     }
@@ -56,18 +48,18 @@ public class Result<T, U> {
         return value;
     }
 
-    public <V> Result<T, V> flatMapError(Function<Error<U>, Result<T, V>> f){
-        if (isError()){
+    public <V> Result<T, V> flatMapError(Function<Error<U>, Result<T, V>> f) {
+        if (isError()) {
             return f.apply(error);
         }
         return Result.of(value);
     }
 
-    public <V> Result<T, V> mapError(Function<Error<U>, Error<V>> f){
+    public <V> Result<T, V> mapError(Function<Error<U>, Error<V>> f) {
         return flatMapError(f.andThen(Result::error));
     }
 
-    public <V,Z> Result<V, Z> fold(Function<T, Result<V, Z>> left, Function<Error<U>, Result<V, Z>> right) {
+    public <V, Z> Result<V, Z> fold(Function<T, Result<V, Z>> left, Function<Error<U>, Result<V, Z>> right) {
         if (isError()) {
             return right.apply(error);
         }
