@@ -6,8 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
 @EnableConfigurationProperties
-@ConfigurationPropertiesScan("eu.phaf.news")
-@ComponentScan("eu.phaf.news")
+@ConfigurationPropertiesScan("eu.phaf.news.infrastructure")
+@ComponentScan({
+        "eu.phaf.news.infrastructure.config",
+        "eu.phaf.news.interfaces.controller"})
 @Profile("news")
 public class NewsConfiguration {
 }

@@ -4,6 +4,7 @@ import eu.phaf.news.application.gateway.ImageGateway;
 import eu.phaf.news.application.service.CountryValidator;
 import eu.phaf.news.application.service.NewsService;
 import eu.phaf.news.infrastructure.gateway.NewsApiOrgV2Gateway;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Configuration
+@EnableConfigurationProperties(NewsApiOrgV2Configuration.class)
 public class NewsDependencyInjection {
 
     @Bean
