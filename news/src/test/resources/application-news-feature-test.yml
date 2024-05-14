@@ -4,3 +4,7 @@ news:
       v2:
         basePath: http://localhost:${wiremock.server.port}
         apiKey: news_api_key
+logging:
+  level:
+    org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler: OFF
+    org.springframework.web.HttpLogging: OFF
