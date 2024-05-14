@@ -1,8 +1,10 @@
 package eu.phaf.news.application.gateway;
 
+import eu.phaf.news.domain.Result;
 import eu.phaf.news.domain.model.NewsArticle;
-import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 public interface NewsGateway {
-    Flux<NewsArticle> getNewsForCountry(String country);
+    Result<List<NewsArticle>, Exception> getNewsForCountry(String country);
 }

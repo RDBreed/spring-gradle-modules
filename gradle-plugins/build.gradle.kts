@@ -17,7 +17,7 @@ repositories {
 }
 dependencies {
     implementation(gradleApi())
-    implementation("org.openapitools:openapi-generator-gradle-plugin:7.0.0")
+    implementation("org.openapitools:openapi-generator-gradle-plugin:7.5.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }

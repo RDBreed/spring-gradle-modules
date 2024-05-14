@@ -6,9 +6,10 @@ swaggerAnnotations = "2.2.21"
 # TODO check https://github.com/spring-cloud/spring-cloud-contract/issues/1933 on compatibility to 3.0.1
 wiremock = "2.35.0"
 wiremockSpringCloud = "4.0.4"
+openapiGenerator = "7.5.0"
 
 [libraries]
-openapiPlugin = { group = "org.openapitools", name = "openapi-generator-gradle-plugin", version = "7.0.0" }
+openapiPlugin = { group = "org.openapitools", name = "openapi-generator-gradle-plugin", version.ref = "openapiGenerator" }
 jakartaAnnotations = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakartaAnnotations" }
 jacksonDatatypeJsr = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
@@ -21,6 +22,6 @@ wiremockSpringCloud = { module = "org.springframework.cloud:spring-cloud-contrac
 openapi = ["jakartaAnnotations", "jacksonDatatypeJsr", "jacksonDatabind", "jacksonAnnotations", "swaggerAnnotations", "springBootStarterValidation"]
 wiremockSpring = ["wiremock", "wiremockSpringCloud"]
 [plugins]
-openapi = { id = "org.openapi.generator", version = "7.0.0" }
+openapi = { id = "org.openapi.generator", version.ref = "openapiGenerator" }
 springboot = { id = 'org.springframework.boot', version = '3.2.4' }
 springbootDependency = { id = 'io.spring.dependency-management', version = '1.1.4' }

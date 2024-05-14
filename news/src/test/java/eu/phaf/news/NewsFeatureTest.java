@@ -66,7 +66,52 @@ public class NewsFeatureTest extends BaseFeatureApplicationContext {
                 .exchange()
                 // then
                 .expectStatus()
-                // TODO exception handling
+                .is4xxClientError();
+    }
+
+    @Test
+    public void shouldErrorOnClientError() {
+        // given
+        NewsOrgApiFixture.clientError();
+        ImageFixture.success();
+        // when
+        webTestClient
+                .mutate()
+                .exchangeStrategies(ExchangeStrategies
+                        .builder()
+                        .codecs(codecs -> codecs
+                                .defaultCodecs()
+                                .maxInMemorySize(1024 * 1024 * 1024))
+                        .build())
+                .build()
+                .get()
+                .uri("/news?country=" + "US")
+                .exchange()
+                // then
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
+    public void shouldErrorOnServerError() {
+        // given
+        NewsOrgApiFixture.serverError();
+        ImageFixture.success();
+        // when
+        webTestClient
+                .mutate()
+                .exchangeStrategies(ExchangeStrategies
+                        .builder()
+                        .codecs(codecs -> codecs
+                                .defaultCodecs()
+                                .maxInMemorySize(1024 * 1024 * 1024))
+                        .build())
+                .build()
+                .get()
+                .uri("/news?country=" + "US")
+                .exchange()
+                // then
+                .expectStatus()
                 .is5xxServerError();
     }
 }

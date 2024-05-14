@@ -1,8 +1,8 @@
-package eu.phaf.openapiconfiguration;
+package eu.phaf.openapi.configuration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.phaf.openapi.infrastructure.config.ApiClient;
+import eu.phaf.openapi.exception.RetryableException;
+import eu.phaf.openapi.exception.UnauthorizedException;
+import eu.phaf.openapi.exception.UnrecoverableClientException;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
 import org.springframework.http.HttpStatus;
@@ -15,22 +15,9 @@ import reactor.netty.http.client.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class OpenApiClientConfiguration {
-    public static ApiClient apiClient(OpenApiProperties openApiProperties) {
-        var defaultDateFormat = ApiClient.createDefaultDateFormat();
-        var defaultObjectMapper = ApiClient.createDefaultObjectMapper(defaultDateFormat);
-        defaultObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        WebClient.Builder webClientBuilder = getWebClientBuilder(defaultObjectMapper, openApiProperties);
-        if (!openApiProperties.exchangeFilterFunctions().isEmpty()) {
-            webClientBuilder.filters(exchangeFilterFunctions -> exchangeFilterFunctions
-                    .addAll(openApiProperties.exchangeFilterFunctions()));
-        }
-        ApiClient apiClient = new ApiClient(webClientBuilder.build());
-        apiClient.setBasePath(openApiProperties.basePath());
-        return apiClient;
-    }
+public class OpenApiReactiveClientConfiguration {
 
-    private static WebClient.Builder getWebClientBuilder(ObjectMapper defaultObjectMapper, OpenApiProperties openApiProperties) {
+    protected static WebClient.Builder mutateWebClientBuilder(WebClient.Builder builder, OpenApiReactiveProperties openApiProperties) {
         HttpClient httpClient = HttpClient.create();
         if (openApiProperties.connectionTimeout() != null) {
             httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, openApiProperties.connectionTimeout());
@@ -39,8 +26,7 @@ public final class OpenApiClientConfiguration {
             httpClient.doOnConnected(connection -> openApiProperties.handlers().forEach(connection::addHandlerLast));
         }
 
-
-        WebClient.Builder builder = ApiClient.buildWebClientBuilder(defaultObjectMapper)
+        builder
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .filter(ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
                     if (clientResponse.statusCode().is5xxServerError()) {
@@ -67,15 +53,16 @@ public final class OpenApiClientConfiguration {
         return builder;
     }
 
-    public record OpenApiProperties(Integer connectionTimeout,
-                                    List<ChannelHandler> handlers,
-                                    Integer maxMemorySizeInBytes,
-                                    List<ExchangeFilterFunction> exchangeFilterFunctions,
-                                    String basePath) {
+    public record OpenApiReactiveProperties(Integer connectionTimeout,
+                                            List<ChannelHandler> handlers,
+                                            Integer maxMemorySizeInBytes,
+                                            List<ExchangeFilterFunction> exchangeFilterFunctions,
+                                            String basePath) {
 
-        public static Builder builder(){
+        public static Builder builder() {
             return new Builder();
         }
+
         public static class Builder {
             private Integer connectionTimeout;
             private Integer maxMemorySizeInBytes;
@@ -108,8 +95,8 @@ public final class OpenApiClientConfiguration {
                 return this;
             }
 
-            public OpenApiProperties build() {
-                return new OpenApiProperties(connectionTimeout, handlers, maxMemorySizeInBytes, exchangeFilterFunctions, basePath);
+            public OpenApiReactiveProperties build() {
+                return new OpenApiReactiveProperties(connectionTimeout, handlers, maxMemorySizeInBytes, exchangeFilterFunctions, basePath);
             }
         }
     }
