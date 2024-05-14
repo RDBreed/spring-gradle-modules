@@ -2,8 +2,8 @@ package eu.phaf.news.infrastructure.gateway;
 
 import eu.phaf.news.application.gateway.ImageGateway;
 import eu.phaf.news.application.gateway.NewsGateway;
-import eu.phaf.news.domain.Result;
-import eu.phaf.news.domain.TrySupplier;
+import eu.phaf.monadic.Result;
+import eu.phaf.monadic.TrySupplier;
 import eu.phaf.news.domain.model.NewsArticle;
 import eu.phaf.news.infrastructure.config.NewsApiOrgV2Configuration;
 import eu.phaf.openapi.configuration.OpenApiClientConfiguration.OpenApiProperties;

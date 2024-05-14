@@ -35,6 +35,15 @@ public class NewsOrgApiFixture {
         );
     }
 
+    public static void unauthorizedError() {
+        stubFor(get(urlPathMatching("/top-headlines"))
+                .withQueryParam("apiKey", equalTo("news_api_key"))
+                .willReturn(WireMock.status(401)
+                        .withHeader("content-type", "application/json")
+                )
+        );
+    }
+
     public static void serverError() {
         stubFor(get(urlPathMatching("/top-headlines"))
                 .withQueryParam("apiKey", equalTo("news_api_key"))

@@ -1,4 +1,4 @@
-package eu.phaf.news.domain;
+package eu.phaf.monadic;
 
 public class TryRunnable {
 

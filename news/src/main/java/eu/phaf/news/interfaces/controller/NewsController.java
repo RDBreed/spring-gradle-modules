@@ -1,8 +1,8 @@
 package eu.phaf.news.interfaces.controller;
 
 import eu.phaf.news.application.service.NewsService;
-import eu.phaf.news.domain.Error;
-import eu.phaf.news.domain.Result;
+import eu.phaf.monadic.Error;
+import eu.phaf.monadic.Result;
 import eu.phaf.news.infrastructure.exception.InvalidCountryCodeException;
 import eu.phaf.openapi.exception.UnauthorizedException;
 import eu.phaf.openapi.exception.UnrecoverableClientException;

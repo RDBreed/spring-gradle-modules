@@ -1,7 +1,7 @@
 package eu.phaf.news.application.service;
 
-import eu.phaf.news.domain.Result;
-import eu.phaf.news.domain.TrySupplier;
+import eu.phaf.monadic.Result;
+import eu.phaf.monadic.TrySupplier;
 
 import java.util.Locale;
 import java.util.MissingResourceException;

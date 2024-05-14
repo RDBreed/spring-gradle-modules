@@ -1,8 +1,8 @@
 package eu.phaf.news.application.service;
 
 import eu.phaf.news.application.gateway.NewsGateway;
-import eu.phaf.news.domain.Error;
-import eu.phaf.news.domain.Result;
+import eu.phaf.monadic.Error;
+import eu.phaf.monadic.Result;
 import eu.phaf.news.domain.model.NewsArticle;
 import eu.phaf.news.infrastructure.exception.InvalidCountryCodeException;
 

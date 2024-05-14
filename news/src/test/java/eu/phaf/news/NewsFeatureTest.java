@@ -93,6 +93,29 @@ public class NewsFeatureTest extends BaseFeatureApplicationContext {
     }
 
     @Test
+    public void shouldErrorOnUnauthorizedError() {
+        // given
+        NewsOrgApiFixture.unauthorizedError();
+        ImageFixture.success();
+        // when
+        webTestClient
+                .mutate()
+                .exchangeStrategies(ExchangeStrategies
+                        .builder()
+                        .codecs(codecs -> codecs
+                                .defaultCodecs()
+                                .maxInMemorySize(1024 * 1024 * 1024))
+                        .build())
+                .build()
+                .get()
+                .uri("/news?country=" + "US")
+                .exchange()
+                // then
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
     public void shouldErrorOnServerError() {
         // given
         NewsOrgApiFixture.serverError();
