@@ -55,4 +55,22 @@ public class Result<T, U> {
         }
         return value;
     }
+
+    public <V> Result<T, V> flatMapError(Function<Error<U>, Result<T, V>> f){
+        if (isError()){
+            return f.apply(error);
+        }
+        return Result.of(value);
+    }
+
+    public <V> Result<T, V> mapError(Function<Error<U>, Error<V>> f){
+        return flatMapError(f.andThen(Result::error));
+    }
+
+    public <V,Z> Result<V, Z> fold(Function<T, Result<V, Z>> left, Function<Error<U>, Result<V, Z>> right) {
+        if (isError()) {
+            return right.apply(error);
+        }
+        return left.apply(value);
+    }
 }
