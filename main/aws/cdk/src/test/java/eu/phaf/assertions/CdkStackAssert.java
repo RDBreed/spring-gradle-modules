@@ -19,6 +19,13 @@ public class CdkStackAssert extends AbstractAssert<CdkStackAssert, Template> {
         return new CdkStackAssert(template);
     }
 
+    public VpcAssert containsVpc() {
+        Map<String, Map<String, Object>> resources = this.actual.findResources(CdkResourceType.VPC.getValue());
+        ((MapAssert) Assertions.assertThat(resources).isNotEmpty()).hasSize(1);
+        return VpcAssert.assertThat(resources.entrySet().stream().findFirst().get().getValue())
+                .withCdkStackAssert(this);
+    }
+
     public ElasticLoadBalancingAssert containsElasticLoadBalancing() {
         Map<String, Map<String, Object>> resources = this.actual.findResources(CdkResourceType.ELASTIC_LOAD_BALANCING.getValue());
         ((MapAssert) Assertions.assertThat(resources).isNotEmpty()).hasSize(1);
@@ -30,6 +37,13 @@ public class CdkStackAssert extends AbstractAssert<CdkStackAssert, Template> {
         Map<String, Map<String, Object>> resources = this.actual.findResources(CdkResourceType.SECURITY_GROUP.getValue());
         ((MapAssert) Assertions.assertThat(resources).isNotEmpty()).hasSize(1);
         return SecurityGroupAssert.assertThat(resources.entrySet().stream().findFirst().get().getValue())
+                .withCdkStackAssert(this);
+    }
+
+    public SubnetAssert containsSubnet(){
+        Map<String, Map<String, Object>> resources = this.actual.findResources(CdkResourceType.SUBNET.getValue());
+        Assertions.assertThat(resources).isNotEmpty();
+        return SubnetAssert.assertThat(resources)
                 .withCdkStackAssert(this);
     }
 }

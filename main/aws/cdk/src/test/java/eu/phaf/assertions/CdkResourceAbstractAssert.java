@@ -15,12 +15,12 @@ public abstract class CdkResourceAbstractAssert<SELF extends AbstractAssert<SELF
         properties = (Map<String, Object>) this.actual.get("Properties");
     }
 
-    protected  <T extends CdkResourceAbstractAssert> T withCdkStackAssert(CdkStackAssert cdkStackAssert) {
+    protected  <T extends CdkResourceAbstractAssert<SELF, ACTUAL>> T withCdkStackAssert(CdkStackAssert cdkStackAssert) {
         this.cdkStackAssert = cdkStackAssert;
         return (T) this;
     }
 
-    public <T extends CdkResourceAbstractAssert> T containsTagsExactly(List<Map.Entry<Object, Object>> keyValues) {
+    public <T extends CdkResourceAbstractAssert<SELF, ACTUAL>> T containsTagsExactly(List<Map.Entry<Object, Object>> keyValues) {
         Assertions.assertThat((List<Map<String, String>>) properties.get("Tags"))
                 .zipSatisfy(keyValues, (tags, keyValue) -> {
                     String key = tags.get("Key");

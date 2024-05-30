@@ -17,10 +17,10 @@ public class ElasticLoadBalancingAssert extends CdkResourceAbstractAssert<Elasti
     }
 
     public ElasticLoadBalancingAssert isDeletionProtection(boolean deletionProtection) {
-        List<Map<String, Object>> loadBalancerAttributes = (List) properties.get("LoadBalancerAttributes");
+        List<?> loadBalancerAttributes = (List<?>) properties.get("LoadBalancerAttributes");
         Assertions.assertThat(loadBalancerAttributes).anySatisfy(attrs -> {
-            Object key = attrs.get("Key");
-            Object value = attrs.get("Value");
+            Object key = ((Map<?, ?>) attrs).get("Key");
+            Object value = ((Map<?, ?>) attrs).get("Value");
             Assertions.assertThat(key).isEqualTo("deletion_protection.enabled");
             Assertions.assertThat(value).isEqualTo(String.valueOf(deletionProtection));
         });
