@@ -1,21 +1,30 @@
 package eu.phaf.news;
 
+import eu.phaf.news.application.service.CountryValidator;
 import eu.phaf.news.wiremockfixture.FileUtils;
 import eu.phaf.news.wiremockfixture.ImageFixture;
 import eu.phaf.news.wiremockfixture.NewsOrgApiFixture;
+import eu.phaf.stateman.RetryTaskActionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 
+import java.time.Duration;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class NewsFeatureTest extends BaseFeatureApplicationContext {
     @Autowired
     @Value("${wiremock.server.port}")
     private int wireMockPort;
+
+    @Autowired
+    private RetryTaskActionRepository retryTaskActionRepository;
 
     @Test
     public void shouldGiveNews() {
@@ -68,5 +77,10 @@ public class NewsFeatureTest extends BaseFeatureApplicationContext {
                 .expectStatus()
                 // TODO exception handling
                 .is5xxServerError();
+
+        await()
+                .atMost(Duration.ofSeconds(20))
+                .pollDelay(Duration.ofSeconds(15))
+                .untilAsserted(() -> assertThat(retryTaskActionRepository.count(CountryValidator.class)).isZero());
     }
 }

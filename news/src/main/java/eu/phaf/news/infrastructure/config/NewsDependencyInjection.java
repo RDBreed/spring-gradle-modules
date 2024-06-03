@@ -4,6 +4,7 @@ import eu.phaf.news.application.gateway.ImageGateway;
 import eu.phaf.news.application.service.CountryValidator;
 import eu.phaf.news.application.service.NewsService;
 import eu.phaf.news.infrastructure.gateway.NewsApiOrgV2Gateway;
+import eu.phaf.stateman.TaskManager;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +22,13 @@ public class NewsDependencyInjection {
     }
 
     @Bean
-    public CountryValidator countryValidator() {
-        return new CountryValidator();
+    public CountryValidator countryValidator(TaskManager taskManager) {
+        return new CountryValidator(taskManager);
     }
 
     @Bean
-    public NewsService newsService(NewsApiOrgV2Configuration newsApiOrgV2Configuration) {
-        return new NewsService(newsApiOrgV2Gateway(newsApiOrgV2Configuration), countryValidator());
+    public NewsService newsService(NewsApiOrgV2Configuration newsApiOrgV2Configuration, TaskManager taskManager) {
+        return new NewsService(newsApiOrgV2Gateway(newsApiOrgV2Configuration), countryValidator(taskManager));
     }
 
     @Bean

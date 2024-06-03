@@ -8,3 +8,12 @@ include 'news'
 include 'weather'
 include 'openapi'
 include 'main'
+include 'stateman-spring'
+include 'stateman-core'
+project(":stateman-spring").projectDir = file("libraries/stateman/spring")
+project(":stateman-core").projectDir = file("libraries/stateman/core")
+//include 'libraries:stateman:spring'
+//findProject(':libraries:stateman:spring')?.name = 'stateman-spring'
+//include 'libraries:stateman:core'
+//findProject(':libraries:stateman:core')?.name = 'stateman-core'
+

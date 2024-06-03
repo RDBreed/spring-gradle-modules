@@ -16,6 +16,8 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation(project(":openapi"))
+    implementation(project(":stateman-core"))
+    implementation(project(":stateman-spring"))
     // apache text utilities for StringSubstitutor
     testImplementation("org.apache.commons:commons-text:1.10.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test"){
