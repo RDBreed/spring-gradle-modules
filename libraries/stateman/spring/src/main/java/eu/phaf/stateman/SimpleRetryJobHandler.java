@@ -1,10 +1,10 @@
-package eu.phaf.stateman.spring;
+package eu.phaf.stateman;
 
-import eu.phaf.stateman.RetryJob;
-import eu.phaf.stateman.RetryJobHandler;
-import eu.phaf.stateman.RetryTask;
-import eu.phaf.stateman.RetryTaskAction;
-import eu.phaf.stateman.RetryTaskActionRepository;
+import eu.phaf.stateman.retry.RetryJob;
+import eu.phaf.stateman.retry.RetryJobHandler;
+import eu.phaf.stateman.retry.RetryTask;
+import eu.phaf.stateman.retry.RetryTaskAction;
+import eu.phaf.stateman.retry.RetryTaskActionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -30,16 +30,22 @@ public class SimpleRetryJobHandler implements RetryJobHandler {
         retryJobs.add(new RetryJob.SimpleRetryJob(retryTaskActionRepository, retryTask, runSpringBean(retryTask, applicationContext)));
     }
 
-    private static Consumer<RetryTaskAction> runSpringBean(RetryTask retryTask, ApplicationContext applicationContext) {
+    private Consumer<RetryTaskAction> runSpringBean(RetryTask retryTask, ApplicationContext applicationContext) {
         return retryTaskAction -> {
             var task = retryTask.task();
             Class<?> theClass = task.theClass();
             Object bean = applicationContext.getBean(theClass);
             try {
                 Method method = bean.getClass().getMethod(retryTask.retryMethod(), task.parameters().toArray(new Class<?>[0]));
-                method.invoke(bean, retryTaskAction.taskAction().parameterValues().values().toArray());
+                method.invoke(bean, retryTaskAction.parameterValues().values().toArray());
             } catch (Exception e) {
-                LOG.debug("Error occurred during call of {}", retryTask.task().methodName(), e);
+                LOG.debug("Error occurred during call of {}", retryTask.retryMethod(), e);
+                retryTaskAction.removeFirstOffsetDateTime();
+                if (!retryTaskAction.offsetDateTimes().isEmpty()) {
+                    retryTaskActionRepository.save(retryTaskAction);
+                } else {
+                    LOG.debug("Retry task action {} does not have any retries left.", retryTask.retryMethod(), e);
+                }
             }
         };
     }

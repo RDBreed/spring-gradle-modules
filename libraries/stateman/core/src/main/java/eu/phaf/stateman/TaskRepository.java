@@ -1,9 +1,14 @@
 package eu.phaf.stateman;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface TaskRepository {
 
+    void generateTable();
 
     void save(Task task);
 
@@ -12,6 +17,11 @@ public interface TaskRepository {
     class InMemoryTaskRepository implements TaskRepository {
 
         private Map<Class<?>, List<Task>> tasks = new HashMap<>();
+
+        @Override
+        public void generateTable() {
+            // doing nothing
+        }
 
         @Override
         public void save(Task task) {

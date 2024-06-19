@@ -1,4 +1,6 @@
-package eu.phaf.stateman;
+package eu.phaf.stateman.retry;
+
+import eu.phaf.stateman.Task;
 
 import java.time.Duration;
 

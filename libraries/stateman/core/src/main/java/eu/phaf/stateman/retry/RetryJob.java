@@ -1,5 +1,6 @@
-package eu.phaf.stateman;
+package eu.phaf.stateman.retry;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,7 +32,7 @@ public interface RetryJob {
                                                    Consumer<RetryTaskAction> retryTaskActionConsumer) {
             var task = retryTask.task();
             ScheduledFuture<?> scheduledFuture = scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
-                Optional<RetryTaskAction> firstRetryTaskAction = retryTaskActionRepository.getFirstRetryTaskAction(task);
+                Optional<RetryTaskAction> firstRetryTaskAction = retryTaskActionRepository.getAndRemoveFirstRetryTaskAction(task, retryTask.retryMethod(), OffsetDateTime.now());
                 firstRetryTaskAction.ifPresent(retryTaskActionConsumer);
             }, 0, 100L, TimeUnit.MILLISECONDS);
             return scheduledFuture;

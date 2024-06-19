@@ -4,7 +4,7 @@ import eu.phaf.news.application.service.CountryValidator;
 import eu.phaf.news.wiremockfixture.FileUtils;
 import eu.phaf.news.wiremockfixture.ImageFixture;
 import eu.phaf.news.wiremockfixture.NewsOrgApiFixture;
-import eu.phaf.stateman.RetryTaskActionRepository;
+import eu.phaf.stateman.retry.RetryTaskActionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

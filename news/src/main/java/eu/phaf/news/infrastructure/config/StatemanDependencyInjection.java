@@ -1,50 +1,48 @@
 package eu.phaf.news.infrastructure.config;
 
-import eu.phaf.stateman.RetryTaskActionRepository;
-import eu.phaf.stateman.RetryTaskRepository;
+import eu.phaf.stateman.PostgresConnection;
+import eu.phaf.stateman.PostgresTaskActionRepository;
+import eu.phaf.stateman.PostgresTaskRepository;
 import eu.phaf.stateman.TaskActionRepository;
-import eu.phaf.stateman.TaskManager;
 import eu.phaf.stateman.TaskRepository;
-import eu.phaf.stateman.spring.SimpleRetryJobHandler;
-import org.springframework.context.ApplicationContext;
+import eu.phaf.stateman.retry.PostgresRetryTaskActionRepository;
+import eu.phaf.stateman.retry.PostgresRetryTaskRepository;
+import eu.phaf.stateman.retry.RetryTaskActionRepository;
+import eu.phaf.stateman.retry.RetryTaskRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class StatemanDependencyInjection {
+
     @Bean
-    public TaskRepository taskRepository() {
-        return new TaskRepository.InMemoryTaskRepository();
+    public PostgresConnection postgresConnection() {
+        // TODO!
+        return new PostgresConnection("", "", "");
     }
 
     @Bean
-    public TaskManager taskManager(ApplicationContext applicationContext) {
-        return new TaskManager(
-                taskRepository(),
-                taskActionRepository(),
-                retryTaskRepository(),
-                retryTaskActionRepository(),
-                retryJobHandler(applicationContext)
-        );
+    @Primary
+    public TaskActionRepository taskActionRepository(PostgresConnection postgresConnection) {
+        return new PostgresTaskActionRepository(postgresConnection);
     }
 
     @Bean
-    public SimpleRetryJobHandler retryJobHandler(ApplicationContext applicationContext) {
-        return new SimpleRetryJobHandler(retryTaskActionRepository(), applicationContext);
+    @Primary
+    public TaskRepository taskRepository(PostgresConnection postgresConnection) {
+        return new PostgresTaskRepository(postgresConnection);
     }
 
     @Bean
-    public TaskActionRepository taskActionRepository() {
-        return new TaskActionRepository.InMemoryTaskActionRepository();
+    @Primary
+    public RetryTaskRepository retryTaskRepository(PostgresConnection postgresConnection) {
+        return new PostgresRetryTaskRepository(postgresConnection);
     }
 
     @Bean
-    public RetryTaskRepository retryTaskRepository() {
-        return new RetryTaskRepository.InMemoryRetryTaskRepository();
-    }
-
-    @Bean
-    public RetryTaskActionRepository retryTaskActionRepository() {
-        return new RetryTaskActionRepository.InMemoryRetryTaskActionRepository();
+    @Primary
+    public RetryTaskActionRepository retryTaskActionRepository(PostgresConnection postgresConnection) {
+        return new PostgresRetryTaskActionRepository(postgresConnection);
     }
 }
