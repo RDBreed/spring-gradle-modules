@@ -55,7 +55,7 @@ public class PostgresTaskActionRepositoryTest {
         OffsetDateTime now = OffsetDateTime.now();
         postgresTaskActionRepository.save(new TaskAction(new Task(PostgresTaskRepository.class, methodName,
                 List.of(String.class, Class.class)),
-                Map.of("methodName", methodName, "theClass", PostgresTaskRepository.class.getName()),
+                List.of(new ParameterClassAndValue<>(String.class, methodName), new ParameterClassAndValue<>(String.class, PostgresTaskRepository.class.getName())),
                 now,
                 TaskAction.TaskType.ENDED));
         try (Connection connection = postgresConnection.connect()) {

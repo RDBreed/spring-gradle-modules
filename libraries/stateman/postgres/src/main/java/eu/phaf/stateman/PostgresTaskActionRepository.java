@@ -10,6 +10,7 @@ public class PostgresTaskActionRepository implements TaskActionRepository {
 
     public PostgresTaskActionRepository(PostgresConnection postgresConnection) {
         this.postgresConnection = postgresConnection;
+        generateTable();
     }
 
     public void generateTable() {
@@ -40,7 +41,14 @@ public class PostgresTaskActionRepository implements TaskActionRepository {
                     StringFormatter.format("VALUES ('{}','{}','{}','{}','{}')\n",
                             task.theClass().getName(),
                             task.methodName(),
-                            JsonDeserializer.deserialize(taskAction.parameterValues()),
+                            JsonMapper.serialize(taskAction.parameterValues()
+                                    .stream()
+                                    .map(parameterClassAndValue -> new ParameterClassNameAndValue(
+                                            parameterClassAndValue.theClass().getName(),
+                                            parameterClassAndValue.theValue())
+                                    )
+                                    .toList()
+                            ),
                             taskAction.offsetDateTime(),
                             taskAction.taskType());
             Statement statement = connection.createStatement();
@@ -49,4 +57,5 @@ public class PostgresTaskActionRepository implements TaskActionRepository {
             throw new RuntimeException(e);
         }
     }
+
 }

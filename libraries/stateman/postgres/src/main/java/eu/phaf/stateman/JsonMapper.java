@@ -2,14 +2,14 @@ package eu.phaf.stateman;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
+public class JsonMapper {
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-public class JsonDeserializer {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    public static String deserialize(Object o) {
+    public static String serialize(Object o) {
         try {
             return objectMapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {
@@ -17,7 +17,7 @@ public class JsonDeserializer {
         }
     }
 
-    public static <T> T serialize(String o, TypeReference<T> theClass) {
+    public static <T> T deserialize(String o, TypeReference<T> theClass) {
         try {
             return objectMapper.readValue(o, theClass);
         } catch (JsonProcessingException e) {

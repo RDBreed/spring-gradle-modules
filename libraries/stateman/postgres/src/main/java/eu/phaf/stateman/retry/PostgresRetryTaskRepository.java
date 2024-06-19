@@ -1,6 +1,6 @@
 package eu.phaf.stateman.retry;
 
-import eu.phaf.stateman.JsonDeserializer;
+import eu.phaf.stateman.JsonMapper;
 import eu.phaf.stateman.PostgresConnection;
 import eu.phaf.stateman.StringFormatter;
 import eu.phaf.stateman.Task;
@@ -18,6 +18,7 @@ public class PostgresRetryTaskRepository implements RetryTaskRepository {
 
     public PostgresRetryTaskRepository(PostgresConnection postgresConnection) {
         this.postgresConnection = postgresConnection;
+        generateTable();
     }
 
     public void generateTable() {
@@ -59,7 +60,7 @@ public class PostgresRetryTaskRepository implements RetryTaskRepository {
                          StringFormatter.format("VALUES ('{}','{}','{}', '{}', {}, '{}')\n",
                                  task.theClass().getName(),
                                  task.methodName(),
-                                 JsonDeserializer.deserialize(task.parameters()),
+                                 JsonMapper.serialize(task.parameters()),
                                  retryTask.retryAfter(),
                                  retryTask.maxAttempts(),
                                  retryTask.retryMethod()
@@ -85,8 +86,8 @@ public class PostgresRetryTaskRepository implements RetryTaskRepository {
                          +
                          StringFormatter.format("WHERE METHOD_NAME = '{}' AND THE_CLASS = '{}' AND PARAMETERS = '{}' \n",
                                  task.methodName(),
-                                 JsonDeserializer.deserialize(task.parameters()),
-                                 task.theClass().getName());
+                                 task.theClass().getName(),
+                                 JsonMapper.serialize(task.parameters()));
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery(sql);

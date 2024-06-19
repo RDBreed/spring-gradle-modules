@@ -14,7 +14,9 @@ public class PostgresTaskRepository implements TaskRepository {
 
     public PostgresTaskRepository(PostgresConnection postgresConnection) {
         this.postgresConnection = postgresConnection;
+        generateTable();
     }
+
 
     public void generateTable() {
         try (Connection connection = postgresConnection.connect()) {
@@ -38,7 +40,7 @@ public class PostgresTaskRepository implements TaskRepository {
         try (Connection connection = postgresConnection.connect()) {
             String sql = "INSERT INTO TASKS\n" +
                     "(THE_CLASS, METHOD_NAME, PARAMETERS)\n" +
-                    StringFormatter.format("VALUES ('{}','{}','{}')\n", task.theClass().getName(), task.methodName(), JsonDeserializer.deserialize(task.parameters()));
+                    StringFormatter.format("VALUES ('{}','{}','{}')\n", task.theClass().getName(), task.methodName(), JsonMapper.serialize(task.parameters()));
             Statement statement = connection.createStatement();
             statement.execute(sql);
         } catch (SQLException e) {
@@ -57,7 +59,7 @@ public class PostgresTaskRepository implements TaskRepository {
             while (resultSet.next()) {
                 String parameters = resultSet.getString("PARAMETERS");
                 Class<?> theClasss = Class.forName(resultSet.getString("THE_CLASS"));
-                return Optional.of(new Task(theClasss, methodName, JsonDeserializer.serialize(parameters, new TypeReference<>() {
+                return Optional.of(new Task(theClasss, methodName, JsonMapper.deserialize(parameters, new TypeReference<>() {
                 })));
             }
         } catch (SQLException | ClassNotFoundException e) {

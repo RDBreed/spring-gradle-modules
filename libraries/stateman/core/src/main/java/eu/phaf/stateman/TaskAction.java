@@ -1,14 +1,15 @@
 package eu.phaf.stateman;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
+import java.util.List;
 
 public record TaskAction(Task task,
-                         Map<String, Object> parameterValues,
+                         List<? extends ParameterClassAndValue<?>> parameterValues,
                          OffsetDateTime offsetDateTime,
                          TaskType taskType) {
 
     public enum TaskType {
         STARTED, ENDED, FAILED
     }
+
 }

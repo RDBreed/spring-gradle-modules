@@ -1,7 +1,9 @@
 package eu.phaf.stateman.retry;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import eu.phaf.stateman.JsonDeserializer;
+import eu.phaf.stateman.JsonMapper;
+import eu.phaf.stateman.ParameterClassAndValue;
+import eu.phaf.stateman.ParameterClassNameAndValue;
 import eu.phaf.stateman.PostgresConnection;
 import eu.phaf.stateman.StringFormatter;
 import eu.phaf.stateman.Task;
@@ -22,6 +24,7 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
 
     public PostgresRetryTaskActionRepository(PostgresConnection postgresConnection) {
         this.postgresConnection = postgresConnection;
+        generateTable();
     }
 
     public void generateTable() {
@@ -69,8 +72,15 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
                          StringFormatter.format("VALUES ('{}','{}','{}', '{}', '{}', '{}', '{}')\n",
                                  task.theClass().getName(),
                                  retryTaskAction.retryMethod(),
-                                 JsonDeserializer.deserialize(task.parameters()),
-                                 JsonDeserializer.deserialize(retryTaskAction.parameterValues()),
+                                 JsonMapper.serialize(task.parameters()),
+                                 JsonMapper.serialize(retryTaskAction.parameterValues()
+                                         .stream()
+                                         .map(parameterClassAndValue -> new ParameterClassNameAndValue(
+                                                 parameterClassAndValue.theClass().getName(),
+                                                 parameterClassAndValue.theValue())
+                                         )
+                                         .toList()
+                                 ),
                                  retryTaskAction.originalEventTime(),
                                  retryTaskAction.getFirstOffsetDateTime(),
                                  times
@@ -90,7 +100,14 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
                                  "WHERE RETRY_METHOD_NAME = '{}' AND THE_CLASS = '{}' AND PARAMETER_VALUES = '{}' AND EVENT_DATE_TIME = '{}'; \n",
                                  retryTaskAction.retryMethod(),
                                  retryTaskAction.task().theClass().getName(),
-                                 JsonDeserializer.deserialize(retryTaskAction.parameterValues()),
+                                 JsonMapper.serialize(retryTaskAction.parameterValues()
+                                         .stream()
+                                         .map(parameterClassAndValue -> new ParameterClassNameAndValue(
+                                                 parameterClassAndValue.theClass().getName(),
+                                                 parameterClassAndValue.theValue())
+                                         )
+                                         .toList()
+                                 ),
                                  retryTaskAction.originalEventTime());
             Statement statement = connection.createStatement();
             int result = statement.executeUpdate(sql);
@@ -125,7 +142,7 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
                                  "WHERE RETRY_METHOD_NAME = '{}' AND THE_CLASS = '{}' AND PARAMETERS = '{}' AND FIRST_RETRY_TIME < '{}' \n",
                                  retryMethod,
                                  task.theClass().getName(),
-                                 JsonDeserializer.deserialize(task.parameters()),
+                                 JsonMapper.serialize(task.parameters()),
                                  now);
             Statement statement = connection.createStatement();
 
@@ -137,12 +154,16 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
                 while (arrayResult.next()) {
                     offsetDateTimes.add(OffsetDateTime.parse(arrayResult.getString(2).replace(' ', 'T')));
                 }
+                List<? extends ParameterClassNameAndValue> parameterValues = JsonMapper.deserialize(resultSet.getString("PARAMETER_VALUES"),
+                        new TypeReference<>() {
+                        });
                 return Optional.of(new RetryTaskAction(
                         task,
                         retryMethod,
-                        JsonDeserializer.serialize(resultSet.getString("PARAMETER_VALUES"),
-                                new TypeReference<>() {
-                                }),
+                        parameterValues
+                                .stream()
+                                .map(PostgresRetryTaskActionRepository::getParameterClassAndValue)
+                                .toList(),
                         originalEventTime,
                         offsetDateTimes));
             }
@@ -150,6 +171,18 @@ public class PostgresRetryTaskActionRepository implements RetryTaskActionReposit
             throw new RuntimeException(e);
         }
         return Optional.empty();
+    }
+
+    private static ParameterClassAndValue<?> getParameterClassAndValue(ParameterClassNameAndValue parameterClassNameAndValue) {
+        try {
+            return gettParameterClassAndValue(Class.forName(parameterClassNameAndValue.className()), parameterClassNameAndValue.value());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static <T> ParameterClassAndValue<T> gettParameterClassAndValue(Class<T> aClass, Object value) throws ClassNotFoundException {
+        return new ParameterClassAndValue<>(aClass, (T) value);
     }
 
     @Override

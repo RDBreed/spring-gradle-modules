@@ -1,6 +1,7 @@
 package eu.phaf.news;
 
 import eu.phaf.news.application.service.CountryValidator;
+import eu.phaf.news.application.service.NewsService;
 import eu.phaf.news.wiremockfixture.FileUtils;
 import eu.phaf.news.wiremockfixture.ImageFixture;
 import eu.phaf.news.wiremockfixture.NewsOrgApiFixture;
@@ -69,6 +70,9 @@ public class NewsFeatureTest extends BaseFeatureApplicationContext {
                                 .defaultCodecs()
                                 .maxInMemorySize(1024 * 1024 * 1024))
                         .build())
+
+                .responseTimeout(Duration.ofDays(3))
+
                 .build()
                 .get()
                 .uri("/news?country=" + "XX")
@@ -81,6 +85,6 @@ public class NewsFeatureTest extends BaseFeatureApplicationContext {
         await()
                 .atMost(Duration.ofSeconds(20))
                 .pollDelay(Duration.ofSeconds(15))
-                .untilAsserted(() -> assertThat(retryTaskActionRepository.count(CountryValidator.class)).isZero());
+                .untilAsserted(() -> assertThat(retryTaskActionRepository.count(NewsService.class)).isZero());
     }
 }

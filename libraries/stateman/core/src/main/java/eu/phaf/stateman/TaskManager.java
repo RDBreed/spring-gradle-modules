@@ -5,7 +5,6 @@ import eu.phaf.stateman.retry.RetryTaskManager;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 public class TaskManager {
     private final TaskRepository taskRepository;
@@ -30,17 +29,17 @@ public class TaskManager {
         retryTaskManager.createRetryTask(task, retryDuration, maxAttempts, retryMethod);
     }
 
-    public void startTask(String methodName, Class<?> theClass, Map<String, Object> parameters) {
+    public void startTask(String methodName, Class<?> theClass, List<ParameterClassAndValue<?>> parameters) {
         taskRepository.getTask(methodName, theClass)
                 .ifPresent(task -> taskActionRepository.save(new TaskAction(task, parameters, OffsetDateTime.now(), TaskAction.TaskType.STARTED)));
     }
 
-    public void endTask(String methodName, Class<?> theClass, Map<String, Object> parameters) {
+    public void endTask(String methodName, Class<?> theClass, List<ParameterClassAndValue<?>>  parameters) {
         taskRepository.getTask(methodName, theClass)
                 .ifPresent(task -> taskActionRepository.save(new TaskAction(task, parameters, OffsetDateTime.now(), TaskAction.TaskType.ENDED)));
     }
 
-    public void failTask(String methodName, Class<?> theClass, Map<String, Object> parameters) {
+    public void failTask(String methodName, Class<?> theClass, List<? extends ParameterClassAndValue<?>> parameters) {
         taskRepository.getTask(methodName, theClass)
                 .ifPresent(task -> {
                     OffsetDateTime now = OffsetDateTime.now();

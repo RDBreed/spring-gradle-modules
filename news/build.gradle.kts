@@ -18,6 +18,10 @@ dependencies {
     implementation(project(":openapi"))
     implementation(project(":stateman-core"))
     implementation(project(":stateman-spring"))
+    // needed for above!
+    implementation("org.aspectj:aspectjweaver:1.9.22.1")
+    implementation("org.springframework:spring-aop")
+
     implementation(project(":stateman-postgres"))
     // apache text utilities for StringSubstitutor
     testImplementation("org.apache.commons:commons-text:1.10.0")

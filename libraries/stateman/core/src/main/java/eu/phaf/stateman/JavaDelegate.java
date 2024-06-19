@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static eu.phaf.stateman.ReflectionUtils.getParameterNames;
 import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 
 public abstract class JavaDelegate<T> {
@@ -28,7 +29,7 @@ public abstract class JavaDelegate<T> {
         }
     }
 
-    public <R> R apply(Supplier<R> function, Map<String, Object> parameters) {
+    public <R> R apply(Supplier<R> function, List<ParameterClassAndValue<?>>  parameters) {
         var callable = StackWalker.getInstance(RETAIN_CLASS_REFERENCE)
                 .walk(stackFrameStream -> stackFrameStream.skip(1).findFirst());
         return callable.map(stackFrame -> {
@@ -79,15 +80,4 @@ public abstract class JavaDelegate<T> {
         return Optional.empty();
     }
 
-
-    private static List<Class<?>> getParameterNames(Method method) {
-        Parameter[] parameters = method.getParameters();
-        List<Class<?>> parameterNames = new ArrayList<>();
-
-        for (Parameter parameter : parameters) {
-            parameterNames.add(parameter.getType());
-        }
-
-        return parameterNames;
-    }
 }

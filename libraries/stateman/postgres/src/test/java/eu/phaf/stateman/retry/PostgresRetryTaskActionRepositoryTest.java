@@ -1,8 +1,10 @@
 package eu.phaf.stateman.retry;
 
+import eu.phaf.stateman.ParameterClassAndValue;
 import eu.phaf.stateman.PostgresConnection;
 import eu.phaf.stateman.PostgresTaskRepository;
 import eu.phaf.stateman.Task;
+import eu.phaf.stateman.TestRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -61,7 +63,7 @@ public class PostgresRetryTaskActionRepositoryTest {
         OffsetDateTime now = OffsetDateTime.now();
         postgresTaskRepository.save(new RetryTaskAction(new Task(PostgresTaskRepository.class, methodName, List.of(String.class, Class.class)),
                 retryMethodName,
-                Map.of("methodName", methodName, "theClass", PostgresTaskRepository.class.getName()),
+                List.of(new ParameterClassAndValue<>(String.class, methodName), new ParameterClassAndValue<>(String.class, PostgresTaskRepository.class.getName())),
                 now,
                 List.of(now, now.plusDays(3), now.plusDays(6))
         ));
@@ -87,7 +89,7 @@ public class PostgresRetryTaskActionRepositoryTest {
         OffsetDateTime now = OffsetDateTime.now();
         postgresTaskRepository.save(new RetryTaskAction(new Task(PostgresTaskRepository.class, methodName, List.of(String.class, Class.class)),
                 retryMethodName,
-                Map.of("methodName", methodName, "theClass", PostgresTaskRepository.class.getName()),
+                List.of(new ParameterClassAndValue<>(List.class, List.of(new TestRecord("test"))), new ParameterClassAndValue<>(String.class, PostgresTaskRepository.class.getName())),
                 now,
                 List.of(now, now.plusDays(3), now.plusDays(6))
         ));
@@ -107,7 +109,7 @@ public class PostgresRetryTaskActionRepositoryTest {
         OffsetDateTime now = OffsetDateTime.now();
         postgresTaskRepository.save(new RetryTaskAction(new Task(PostgresTaskRepository.class, methodName, List.of(String.class, Class.class)),
                 retryMethodName,
-                Map.of("methodName", methodName, "theClass", PostgresTaskRepository.class.getName()),
+                List.of(new ParameterClassAndValue<>(String.class, methodName), new ParameterClassAndValue<>(String.class, PostgresTaskRepository.class.getName())),
                 now,
                 List.of(now, now.plusDays(3), now.plusDays(6))
         ));

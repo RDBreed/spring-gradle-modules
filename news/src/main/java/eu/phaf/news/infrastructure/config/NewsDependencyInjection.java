@@ -22,13 +22,13 @@ public class NewsDependencyInjection {
     }
 
     @Bean
-    public CountryValidator countryValidator(TaskManager taskManager) {
-        return new CountryValidator(taskManager);
+    public CountryValidator countryValidator() {
+        return new CountryValidator();
     }
 
     @Bean
     public NewsService newsService(NewsApiOrgV2Configuration newsApiOrgV2Configuration, TaskManager taskManager) {
-        return new NewsService(newsApiOrgV2Gateway(newsApiOrgV2Configuration), countryValidator(taskManager));
+        return new NewsService(newsApiOrgV2Gateway(newsApiOrgV2Configuration), countryValidator());
     }
 
     @Bean

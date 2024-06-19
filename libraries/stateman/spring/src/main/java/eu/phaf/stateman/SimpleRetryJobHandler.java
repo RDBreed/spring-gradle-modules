@@ -37,7 +37,7 @@ public class SimpleRetryJobHandler implements RetryJobHandler {
             Object bean = applicationContext.getBean(theClass);
             try {
                 Method method = bean.getClass().getMethod(retryTask.retryMethod(), task.parameters().toArray(new Class<?>[0]));
-                method.invoke(bean, retryTaskAction.parameterValues().values().toArray());
+                method.invoke(bean, retryTaskAction.parameterValues().stream().map(ParameterClassAndValue::theValue).toArray());
             } catch (Exception e) {
                 LOG.debug("Error occurred during call of {}", retryTask.retryMethod(), e);
                 retryTaskAction.removeFirstOffsetDateTime();
